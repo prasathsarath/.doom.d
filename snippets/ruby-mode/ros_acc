@@ -1,0 +1,15 @@
+# -*- mode: snippet -*-
+# name: run_on_slave_with_acc
+# key: ros_acc
+# uuid: ros_acc
+# --
+def $1(account_id, $2)
+  DatabaseProxy.on_replica(shard: :shard1) do
+    ::Account.find(account_id).as_current do
+      $0
+      nil
+    end
+  end
+end
+
+$1($3, $4)

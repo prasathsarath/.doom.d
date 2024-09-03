@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+# name: ros_wts
+# uuid: ros_wts
+# key: ros_wts
+# --
+def $1($2)
+  DatabaseProxy.on_replica(shard: :shard1) do
+    ::Current.without_tenant_scoping do
+      $0
+    end
+  end
+end
+
+$1($3)

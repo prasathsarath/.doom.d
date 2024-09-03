@@ -1,0 +1,15 @@
+# -*- mode: snippet -*-
+# name: run_on_slave
+# key: ros
+# uuid: ros
+# --
+def $1(subdomain, $2)
+  DatabaseProxy.on_replica(shard: :shard1) do
+    ::Account.find_by_subdomain(subdomain).as_current do
+      $0
+      nil
+    end
+  end
+end
+
+$1("$3", $4)
