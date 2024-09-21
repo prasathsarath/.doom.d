@@ -189,4 +189,4 @@
 
 (use-package! gptel
  :config
- (setq! gptel-api-key "sk-svcacct-1gzxmaYOOHKwJdBCJpNAT3BlbkFJFLYx6NVWbnV8CuuXqivn"))
+ (setq! gptel-api-key "<>"))
