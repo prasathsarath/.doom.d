@@ -37,8 +37,8 @@
   :config
   (setq calendar-latitude 12.9542)   ; Set your latitude
   (setq calendar-longitude 80.2513) ; Set your longitude
-  (setq circadian-themes '((:sunrise . doom-gruvbox)
-                           (:sunset  . doom-solarized-dark)))
+  (setq circadian-themes '((:sunrise . doom-solarized-dark)
+                           (:sunset  . doom-one)))
   (circadian-setup))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
