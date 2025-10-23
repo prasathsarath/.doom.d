@@ -1,0 +1,25 @@
+# -*- mode: snippet -*-
+# name: loop over ids with delay
+# key: loopids
+# --
+#!/bin/bash
+
+# List of IDs to iterate through
+IDS=(
+${1:1001}
+${2:1002}
+${3:1003}
+)
+
+# Command or script to run for each ID
+# You can replace "echo" with your actual command
+for ID in "${IDS[@]}"; do
+  echo "===== Running for ID: $ID ====="
+
+  ${4:echo "Running script for ID $ID"}
+
+  echo "===== Completed ID: $ID ====="
+  echo "Sleeping for 5 seconds before next..."
+  sleep 5
+  echo ""
+done

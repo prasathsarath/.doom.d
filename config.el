@@ -32,14 +32,14 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-one)
-(use-package! circadian
-  :config
-  (setq calendar-latitude 12.9542)   ; Set your latitude
-  (setq calendar-longitude 80.2513) ; Set your longitude
-  (setq circadian-themes '((:sunrise . doom-solarized-light)
-                           (:sunset  . doom-solarized-dark)))
-  (circadian-setup))
+(setq doom-theme 'doom-solarized-light)
+;; (use-package! circadian
+;;   :config
+;;   (setq calendar-latitude 12.9542)   ; Set your latitude
+;;   (setq calendar-longitude 80.2513) ; Set your longitude
+;;   (setq circadian-themes '((:sunrise . doom-solarized-light)
+;;                            (:sunset  . doom-solarized-dark)))
+;;   (circadian-setup))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -165,28 +165,33 @@
       "m c f" #'run-standardrb-fix)
 
 
-;; accept completion from copilot and fallback to company
-(use-package! copilot
-  :hook (prog-mode . copilot-mode)
-  :bind (:map copilot-completion-map
-              ("M-y" . 'copilot-accept-completion)
-              ("M-w" . 'copilot-accept-completion-by-word)
-              ))
+;; OPTIONAL configuration
+(setq
+ gptel-model 'codellama:7b
+ gptel-backend (gptel-make-ollama "Ollama"
+                 :host "localhost:11434"
+                 :stream t
+                 :models '(gemma3:latest
+                           deepseek-r1:latest
+                           mistral:latest
+                           )))
 
-;; (after! (evil copilot)
-;;   ;; Define the custom function that either accepts the completion or does the default behavior
-;;   (defun my/copilot-tab-or-default ()
-;;     (interactive)
-;;     (if (and (bound-and-true-p copilot-mode)
-;;              ;; Add any other conditions to check for active copilot suggestions if necessary
-;;              )
-;;         (copilot-accept-completion)
-;;       (evil-insert 1))) ; Default action to insert a tab. Adjust as needed.
+(setq lsp-java-vmargs '("-noverify" "-Xmx1G" "-XX:+UseG1GC"
+                        "-XX:+UseStringDeduplication"
+                        "-javaagent:/Users/sarathprasath.krishnaswamy/.m2/repository/org/projectlombok/lombok/1.18.28/lombok-1.18.28.jar"
+                        "-Xbootclasspath/a:/Users/sarathprasath-krishnaswamy/.m2/repository/org/projectlombok/lombok/1.18.28/lombok-1.18.28.jar"))
 
-;;   ;; Bind the custom function to <tab> in Evil's insert state
-;;   (evil-define-key 'insert 'global (kbd "<tab>") 'my/copilot-tab-or-default))
+(use-package dap-java
+  :after lsp-java)
 
-
-(use-package! gptel
- :config
- (setq! gptel-api-key "<>"))
+(use-package ellama
+  :ensure t
+  :bind ("C-c e" . ellama-transient-main-menu)
+  ;; send last message in chat buffer with C-c C-c
+  :hook (org-ctrl-c-ctrl-c-final . ellama-chat-send-last-message)
+  :init (setopt ellama-auto-scroll t)
+  :config
+  ;; show ellama context in header line in all buffers
+  (ellama-context-header-line-global-mode +1)
+  ;; show ellama session id in header line in all buffers
+  (ellama-session-header-line-global-mode +1))

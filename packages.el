@@ -50,6 +50,7 @@
 ;; (unpin! t)
 (package! rubocop :disable t)
 (package! circadian)
-(package! copilot
-  :recipe (:host github :repo "copilot-emacs/copilot.el" :files ("*.el")))
 (package! gptel)
+(package! ellama)
+(package! org-ql)
+(package! org-super-agenda) ;; recommended for better agenda views
