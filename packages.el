@@ -48,9 +48,6 @@
 ;; (unpin! pinned-package another-pinned-package)
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;; (unpin! t)
-(package! rubocop :disable t)
 (package! circadian)
-(package! gptel)
-(package! ellama)
 (package! org-ql)
 (package! org-super-agenda) ;; recommended for better agenda views
