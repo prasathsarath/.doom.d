@@ -32,14 +32,14 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-solarized-light)
-;; (use-package! circadian
-;;   :config
-;;   (setq calendar-latitude 12.9542)   ; Set your latitude
-;;   (setq calendar-longitude 80.2513) ; Set your longitude
-;;   (setq circadian-themes '((:sunrise . doom-solarized-light)
-;;                            (:sunset  . doom-solarized-dark)))
-;;   (circadian-setup))
+;; (setq doom-theme 'doom-solarized-light)
+(use-package! circadian
+  :config
+  (setq calendar-latitude 12.935082)   ; Set your latitude
+  (setq calendar-longitude 77.5772033) ; Set your longitude
+  (setq circadian-themes '((:sunrise . doom-solarized-light)
+                           (:sunset  . doom-solarized-dark)))
+  (circadian-setup))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -130,10 +130,6 @@
 (global-whitespace-mode) ; Enable whitespace mode everywhere
 ; END TABS CONFIG
 
-;; Disable RuboCop in Flycheck for Ruby
-(after! flycheck
-  (setq flycheck-disabled-checkers '(ruby-rubocop)))
-
 (setq mode-require-final-newline nil);; avoid adding a new line at the end of file
 ;;
 (defun my-put-file-name-on-clipboard ()
@@ -153,45 +149,89 @@
 
 (setq auth-sources '("~/.authinfo"))
 
-(defun run-standardrb-fix ()
-  "Run 'bundle exec standardrb --fix' in the current project."
-  (interactive)
-  (let ((default-directory (projectile-project-root)))
-    (compile "bundle exec standardrb --fix")))
-
 ;; Optionally, bind the function to a key for easy access
 (map! :leader
       :desc "Run StandardRB fix"
       "m c f" #'run-standardrb-fix)
 
-
-;; OPTIONAL configuration
 (setq
- gptel-model 'codellama:7b
+ gptel-model 'deepseek-r1:1.5b
  gptel-backend (gptel-make-ollama "Ollama"
                  :host "localhost:11434"
                  :stream t
-                 :models '(gemma3:latest
-                           deepseek-r1:latest
-                           mistral:latest
-                           )))
+                 :models '(deepseek-r1:1.5b)))
 
-(setq lsp-java-vmargs '("-noverify" "-Xmx1G" "-XX:+UseG1GC"
-                        "-XX:+UseStringDeduplication"
-                        "-javaagent:/Users/sarathprasath.krishnaswamy/.m2/repository/org/projectlombok/lombok/1.18.28/lombok-1.18.28.jar"
-                        "-Xbootclasspath/a:/Users/sarathprasath-krishnaswamy/.m2/repository/org/projectlombok/lombok/1.18.28/lombok-1.18.28.jar"))
 
-(use-package dap-java
-  :after lsp-java)
+(add-to-list 'auto-mode-alist '("\\.cap\\'" . ruby-mode))
 
-(use-package ellama
-  :ensure t
-  :bind ("C-c e" . ellama-transient-main-menu)
-  ;; send last message in chat buffer with C-c C-c
-  :hook (org-ctrl-c-ctrl-c-final . ellama-chat-send-last-message)
-  :init (setopt ellama-auto-scroll t)
-  :config
-  ;; show ellama context in header line in all buffers
-  (ellama-context-header-line-global-mode +1)
-  ;; show ellama session id in header line in all buffers
-  (ellama-session-header-line-global-mode +1))
+
+(add-hook 'after-init-hook 'inf-ruby-switch-setup)
+(setq compilation-scroll-output t)
+
+(setq auth-sources '("~/.authinfo.gpg"))
+
+(after! lsp-mode
+  ;; Ignore directories
+  (add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]node_modules\\'")
+  (add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]tmp\\'")
+  ;; Ignore .log files
+  (add-to-list 'lsp-file-watch-ignored-files "[/\\\\][^/\\\\]+\\.log\\'"))
+
+(setq plantuml-executable-path "/opt/homebrew/bin/plantuml")
+(setq plantuml-default-exec-mode 'executable)
+
+
+(defun gptel-api-key-from-environment (&optional var)
+  (lambda ()
+    (getenv (or var                     ;provided key
+                (thread-first           ;or fall back to <TYPE>_API_KEY
+                  (type-of gptel-backend)
+                  (symbol-name)
+                  (substring 6)
+                  (upcase)
+                  (concat "_API_KEY"))))))
+
+
+;; OpenRouter offers an OpenAI compatible API
+(setq gptel-model   'gpt-oss:latest
+      gptel-backend
+      (gptel-make-openai "OpenRouter"               ;Any name you want
+        :endpoint "/v1/chat/completions"
+        :stream t
+        :key (gptel-api-key-from-environment "ONEAPI_KEY")                   ;can be a function that returns the key
+        :models '(bge-m3:latest
+                  bge-reranker-v2-m3
+                  deepseek-r1:32b
+                  deepseek/deepseek-v3.2
+                  deepseek/deepseek-v3.2-exp
+                  deepseek/deepseek-v3.2-speciale
+                  devstral-small-2:latest
+                  embeddinggemma:latest
+                  gemma3:12b
+                  gemma3:27b
+                  gemma3n:latest
+                  glm-5
+                  gpt-oss:latest
+                  hf.co/Qwen/Qwen3-Embedding-8B-GGUF:Q8_0
+                  hf.co/TeichAI/Nemotron-Orchestrator-8B-DeepSeek-v3.2-Speciale-Distill-GGUF:Q8_0
+                  kimi-k2.5
+                  linux6200/bge-reranker-v2-m3:latest
+                  minimax-m2.5
+                  minimax/minimax-m2.5
+                  moonshotai/kimi-k2.5
+                  nemotron-3-nano:latest
+                  nomic-embed-text-v2-moe:latest
+                  nomic-embed-text:latest
+                  olmo-3.1:latest
+                  openai/gpt-oss-120b
+                  qwen/qwen3.5-397b-a17b
+                  qwen3-coder:30b
+                  qwen3-embedding:latest
+                  qwen3:32b
+                  rnj-1:8b
+                  translategemma:27b
+                  z-ai/glm-4.7
+                  z-ai/glm-4.7-flash
+                  z-ai/glm-5)))
+
+
