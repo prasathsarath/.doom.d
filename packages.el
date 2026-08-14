@@ -51,3 +51,6 @@
 (package! circadian)
 (package! org-ql)
 (package! org-super-agenda) ;; recommended for better agenda views
+(package! org-contrib)
+(package! mermaid-mode)
+(package! ob-mermaid)

@@ -170,6 +170,8 @@
 
 (setq auth-sources '("~/.authinfo.gpg"))
 
+(setq lsp-disabled-clients '(solargraph))
+
 (after! lsp-mode
   ;; Ignore directories
   (add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]node_modules\\'")
@@ -235,3 +237,18 @@
                   z-ai/glm-5)))
 
 
+(use-package! org-contrib
+  :config
+  (require 'ox-confluence)
+  (add-to-list 'org-export-backends 'confluence))
+
+(use-package! mermaid-mode
+  :mode "\\.mmd\\'")
+
+(use-package! ob-mermaid
+  :after org
+  :config
+  (setq ob-mermaid-cli-path "/opt/homebrew/bin/mmdc")
+  (add-to-list 'org-babel-load-languages '(mermaid . t)))
+
+(load! "lisp/rails-pry-locator")
